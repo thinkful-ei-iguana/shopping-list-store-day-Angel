@@ -1,3 +1,5 @@
+// eslint-disable-next-line strict
+'use strict';
 const store = {
   items: [
     { id: cuid(), name: 'apples', checked: false },
@@ -7,6 +9,7 @@ const store = {
   ],
   hideCheckedItems: false
 };
+
 
 const generateItemElement = function (item) {
   let itemTitle = `<span class='shopping-item shopping-item__checked'>${item.name}</span>`;
@@ -26,6 +29,11 @@ const generateItemElement = function (item) {
         <button class='shopping-item-delete js-item-delete'>
           <span class='button-label'>delete</span>
         </button>
+        <form id='shopping-item-change'>
+          <label for="item-name-change">Change Item Name</label>
+          <input type="text" name="item-name-change" class="${item.id}">
+          <button type="submit">Change Item</button>
+        </form>
       </div>
     </li>`;
 };
@@ -127,6 +135,11 @@ const handleDeleteItemClicked = function () {
   });
 };
 
+const editListItemName = function (id, itemName) {
+  const item = store.items.find(item => item.id === id);
+  item.name = itemName;
+};
+
 /**
  * Toggles the store.hideCheckedItems property
  */
@@ -145,6 +158,21 @@ const handleToggleFilterClick = function () {
   });
 };
 
+//user can edit the title of an item
+
+const handleEditShoppingItemSubmit = function () {
+  $('.js-shopping-list').on('submit', '.js-edit-item', event => {
+    event.preventDefault();
+    const id = getItemIdFromElement(event.currentTarget);
+    const itemName = $(event.currentTarget).find('.shopping-item').val();
+    editListItemName(id, itemName);
+    render();
+  });
+};
+//user can press a button on an item labeled "change item"
+//get new name(?)
+//with the new name, change the name of the item in the store and rerender the page
+
 /**
  * This function will be our callback when the
  * page loads. It is responsible for initially 
@@ -160,7 +188,9 @@ const handleShoppingList = function () {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleToggleFilterClick();
+  handleChangeItem();
 };
+
 
 // when the page loads, call `handleShoppingList`
 $(handleShoppingList);
